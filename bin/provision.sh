@@ -1,6 +1,6 @@
 #!/bin/bash
 # Just a quick script i made to provision a linux Box for Farmbot Development.
-
+export TWD=$(pwd)
 # Make sure we are NOT root
 if [ "$(whoami)" == "root" ]; then
   echo "This script should NOT be run as root. If root is needed, it will ask."
@@ -86,8 +86,14 @@ else
   # Create the directories, and clone the farmbot projects into them.
   mkdir $HOME/farmbot
   cd $HOME/farmbot
+  echo "Use ssh for Git Clones? Y/n"
+  read GITQ
+  if [ -z $GITQ ] || [ $GITQ == "y" ] || [ $GITQ == "yes"  ] || [ $GITQ == "Y"  ]; then
+    FB_GIT='ssh://git@github.com/FarmBot'
+  else
+    FB_GIT='https://github.com/FarmBot'
+  fi
 
-  FB_GIT='https://github.com/FarmBot'
   git clone $FB_GIT/farmbot-raspberry-pi-controller.git
   git clone $FB_GIT/farmbot-web-frontend.git
   git clone $FB_GIT/farmbot-arduino-firmware.git
@@ -100,11 +106,13 @@ else
   git clone $FB_GIT/mqtt-gateway.git
 fi
 
-echo "Should I spin up a local debug instance? (Y/n)"
+echo "Should I spin up a local debug instance? (y/N)"
 echo "[NOTE] There is no error checking for this. You will probably need to get your hands dirty after this fails."
+cd $TWD
+echo $TWD
 read STARTR
 if [ -z "$STARTR" ] || [ "$STARTR" == "n" ] || [ "$STARTR" == "no" ]; then
   exit 0;
 else
-  start_local_server.sh
+  ./start_local_server.sh
 fi
