@@ -10,7 +10,7 @@ fi
 # Detect System
 DISTRO=$(lsb_release -si)
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
-PACKAGES=$( cat packages/$DISTRO"_packages.source" )
+PACKAGES=$( cat ../packages/$DISTRO"_packages.source" )
 
 if [ -z "$PACKAGES" ]; then
   echo "No packages defined for $DISTRO"
@@ -68,22 +68,22 @@ fi
 
 # install Ruby.
 if [ -d $HOME/.rvm/rubies/ruby-2.3.1/ ]; then
-  echo "Ruby Already installed."
-else
-  gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+  echo "Ruby 2.3.1 Already installed."
+else  gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
   curl -sSL https://get.rvm.io | bash -s stable
+  source $HOME/.rvm/bin/rvm
+  echo "Adding rvm to bashrc. You may need to change some terminal settings for it to work."
+  echo "source $HOME/.rvm/bin/rvm" >> $HOME/.bashrc
   rvm install ruby 2.3.1
-  source ~/.rvm/bin/rvm
   gem install bundler
 fi
 
 # Install mongodb
 
-
 if [ -d $HOME/farmbot/ ]; then
   echo "Dirs already found. Bailing."
 else
-  # Make dirs and shit.
+  # Create the directories, and clone the farmbot projects into them.
   mkdir $HOME/farmbot
   cd $HOME/farmbot
 
