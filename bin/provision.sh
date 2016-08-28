@@ -8,9 +8,9 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 # Detect System
-DISTRO=$(lsb_release -si)
-ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
-PACKAGES=$( cat ../packages/$DISTRO"_packages.source" )
+export DISTRO=$(lsb_release -si)
+export ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+export PACKAGES=$( cat ../packages/$DISTRO"_packages.source" )
 
 if [ -z "$PACKAGES" ]; then
   echo "No packages defined for $DISTRO"
@@ -41,7 +41,6 @@ elif [ "$DISTRO" == "Ubuntu" ] || [ "$DISTRO" == "Debian" ]; then
 elif [ "$DISTRO" == "Fedora" ]; then
   echo "i dont know how to yum."
 fi
-
 
 # Install asdf-vm for node-js
 if [ -d ~/.asdf ]; then
@@ -78,7 +77,41 @@ else  gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113
   gem install bundler
 fi
 
-# Install mongodb
+# Install Arduino and stuff, to build the farmbot-arduino-firmware
+ARDUINO_VERSION="1.6.11"
+if [ $(uname) == "Linux" ]; then
+  ARDUINO_PLATFORM="linux"
+elif [ $(uname) == "Darwin" ]; then
+  ARDUINO_PLATFORM="darwin"
+fi
+
+ARDUINO_NAME="arduino-$ARDUINO_VERSION-$ARDUINO_PLATFORM$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')"
+
+if [ -d $HOME/arduino/ ]; then
+  echo "Arduino Already installed."
+else
+  mkdir $HOME/arduino; cd $HOME/arduino
+  echo "Downloading $ARDUINO_NAME"
+  wget http://arduino.cc/download.php?f=/$ARDUINO_NAME.tar.xz -O $ARDUINO_NAME.tar.xz
+  echo "Extracting $ARDUINO_NAME"
+  tar -xJf $ARDUINO_NAME.tar.xz
+  rm $ARDUINO_NAME.tar.xz
+  cd $ARDUINO_NAME
+
+  # I don't actually know what this does?
+  sh -c ./install.sh
+  export PATH=$PATH:$HOME/arduino/$ARDUINO_NAME
+  echo "PATH=$PATH:$HOME/arduino/$ARDUINO_NAME" >> $HOME/.bashrc
+fi
+
+mkdir /tmp/farmbot_provision
+cd /tmp/farmbot_provision
+
+sudo pip install jinja2 glob2
+
+git clone git://github.com/amperka/ino.git
+cd ino
+sudo make install
 
 if [ -d $HOME/farmbot/ ]; then
   echo "Dirs already found. Bailing."
