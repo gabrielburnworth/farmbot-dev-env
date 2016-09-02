@@ -1,5 +1,7 @@
 #!/bin/bash
 echo "Starting MQTT Broker"
+# Sleep for a few seconds to make sure the Web_api is up.
+sleep 4
 # Start teh MQTT broker.
 cd $WD/mqtt-gateway
 if [ ! -e $WD/"${PWD##*/}".setup ]; then
@@ -8,3 +10,4 @@ if [ ! -e $WD/"${PWD##*/}".setup ]; then
 fi
 node app/index.js
 read
+bash

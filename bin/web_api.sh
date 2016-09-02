@@ -7,3 +7,4 @@ if [ ! -e $WD/"${PWD##*/}".setup ]; then
   echo "" > $WD/"${PWD##*/}".setup
 fi
 rails s
+bash

@@ -1,5 +1,8 @@
 #!/bin/bash
 source rvm
+# Sleep for a few seconds to make sure the Web_api is up.
+sleep 4
+
 echo "Starting RPI Controller"
 cd $WD/farmbot-raspberry-pi-controller
 if [ ! -e $WD/"${PWD##*/}".setup ]; then
@@ -10,4 +13,4 @@ if [ ! -e $WD/"${PWD##*/}".setup ]; then
   echo "" > $WD/"${PWD##*/}".setup
 fi
 ruby farmbot.rb
-read
+bash
